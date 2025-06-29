@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>JavaScript Stopwatch</title>
+</head>
+<body>
+  <script>
+    
+    const body = document.body;
+    body.style.fontFamily = 'Arial, sans-serif';
+    body.style.backgroundColor = '#1a1a2e';
+    body.style.color = '#fff';
+    body.style.display = 'flex';
+    body.style.flexDirection = 'column';
+    body.style.alignItems = 'center';
+    body.style.justifyContent = 'center';
+    body.style.height = '100vh';
+    body.style.margin = '0';
+
+    const title = document.createElement('h1');
+    title.textContent = 'Stopwatch';
+    body.appendChild(title);
+
+    const display = document.createElement('div');
+    display.id = 'display';
+    display.textContent = '00:00:00';
+    display.style.fontSize = '48px';
+    display.style.margin = '20px 0';
+    body.appendChild(display);
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.marginBottom = '20px';
+    body.appendChild(buttonContainer);
+
+    const buttons = ['Start', 'Pause', 'Reset', 'Lap'];
+    const btnRefs = {};
+
+    buttons.forEach(text => {
+      const btn = document.createElement('button');
+      btn.textContent = text;
+      btn.style.margin = '5px';
+      btn.style.padding = '10px 20px';
+      btn.style.fontSize = '16px';
+      btn.style.cursor = 'pointer';
+      btnRefs[text.toLowerCase()] = btn;
+      buttonContainer.appendChild(btn);
+    });
+
+    const lapList = document.createElement('ul');
+    lapList.style.listStyle = 'none';
+    lapList.style.padding = '0';
+    lapList.style.marginTop = '10px';
+    body.appendChild(lapList);
+
+    
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval = null;
+    let isRunning = false;
+
+    function updateDisplay(time) {
+      const hrs = String(Math.floor(time / 3600000)).padStart(2, "0");
+      const mins = String(Math.floor((time % 3600000) / 60000)).padStart(2, "0");
+      const secs = String(Math.floor((time % 60000) / 1000)).padStart(2, "0");
+      display.textContent = `${hrs}:${mins}:${secs}`;
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      startTime = Date.now() - elapsedTime;
+      timerInterval = setInterval(() => {
+        elapsedTime = Date.now() - startTime;
+        updateDisplay(elapsedTime);
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      isRunning = false;
+      clearInterval(timerInterval);
+    }
+
+    function resetTimer() {
+      isRunning = false;
+      clearInterval(timerInterval);
+      elapsedTime = 0;
+      updateDisplay(elapsedTime);
+      lapList.innerHTML = '';
+    }
+
+    function recordLap() {
+      if (!isRunning) return;
+      const lapItem = document.createElement('li');
+      lapItem.textContent = `Lap: ${display.textContent}`;
+      lapList.appendChild(lapItem);
+    }
+
+    
+    btnRefs.start.addEventListener('click', startTimer);
+    btnRefs.pause.addEventListener('click', pauseTimer);
+    btnRefs.reset.addEventListener('click', resetTimer);
+    btnRefs.lap.addEventListener('click', recordLap);
+  </script>
+</body>
+</html>
